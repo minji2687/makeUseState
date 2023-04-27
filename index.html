@@ -9,17 +9,23 @@
   <body>
     <div id="app"></div>
     <script>
-      let state = undefined;
+      let currentStateKey = 0;
+      const states = [];
+
       function useState(initState) {
-        if (state === undefined) {
-          state = initState;
+        const key = currentStateKey;
+        if (states.length === key) {
+          states.push(initState);
         }
 
+        const state = states[key];
+
         const setState = (newState) => {
-          state = newState;
+          states[key] = newState;
           render();
         };
 
+        currentStateKey += 1;
         return [state, setState];
       }
 
@@ -38,7 +44,7 @@
 
       function Cat() {
         const [cat, setCat] = useState("고양이");
-
+        console.log(cat, setCat);
         window.meow = () => setCat(cat + " 야옹!");
 
         return `
@@ -49,14 +55,15 @@
         `;
       }
 
-      let renderCount = 0;
       const render = () => {
-        // <div>renderCount:${renderCount}</div>
-        app.innerHTML = `
-          ${Counter()}
-          ${Cat()}
+        const $app = document.querySelector("#app");
+        $app.innerHTML = `
+          <div>
+            ${Counter()}
+            ${Cat()}
+          </div>
         `;
-        renderCount += 1;
+        currentStateKey = 0;
       };
 
       render();
