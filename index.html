@@ -36,11 +36,25 @@
         `;
       }
 
+      function Cat() {
+        const [cat, setCat] = useState("고양이");
+
+        window.meow = () => setCat(cat + " 야옹!");
+
+        return `
+          <div>
+            <strong>${cat}</strong>
+            <button onclick="meow()">고양이 울음소리</button>
+          </div>
+        `;
+      }
+
       let renderCount = 0;
       const render = () => {
+        // <div>renderCount:${renderCount}</div>
         app.innerHTML = `
-          <div>renderCount:${renderCount}</div>
           ${Counter()}
+          ${Cat()}
         `;
         renderCount += 1;
       };
