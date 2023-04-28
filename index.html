@@ -9,30 +9,46 @@
   <body>
     <div id="app"></div>
     <script>
-      let currentStateKey = 0;
-      const states = [];
-
-      function useState(initState) {
-        const key = currentStateKey;
-        if (states.length === key) {
-          states.push(initState);
-        }
-
-        const state = states[key];
-
-        const setState = (newState) => {
-          // console.log(newState);
-          if (newState == state) return;
-
-          if (JSON.stringify(newState) === JSON.stringify(state)) return;
-
-          states[key] = newState;
-          render();
+      function MyReact() {
+        const options = {
+          currentStateKey: 0,
+          renderCount: 0,
+          states: [],
+          root: null,
+          rootComponent: null,
         };
 
-        currentStateKey += 1;
-        return [state, setState];
+        function useState(initState) {
+          const { currentStateKey: key, states } = options;
+          if (states.length === key) states.push(initState);
+
+          const state = states[key];
+          const setState = (newState) => {
+            states[key] = newState;
+            _render();
+          };
+          options.currentStateKey += 1;
+          return [state, setState];
+        }
+
+        function render(rootComponent, root) {
+          options.root = root;
+          options.rootComponent = rootComponent;
+          _render();
+        }
+
+        const _render = debounceFrame(() => {
+          const { root, rootComponent } = options;
+          if (!root || !rootComponent) return;
+          root.innerHTML = rootComponent();
+          options.currentStateKey = 0;
+          options.renderCount += 1;
+        });
+
+        return { useState, render };
       }
+
+      const { useState, render } = MyReact();
 
       // function Counter() {
       //   const [count, setCount] = useState(1);
@@ -63,6 +79,7 @@
       function CounterAndMeow() {
         const [count, setCount] = useState(1);
         const [cat, setCat] = useState("야옹! ");
+        console.log(count, cat);
 
         function countMeow(newCount) {
           setCount(newCount);
@@ -89,20 +106,14 @@
         };
       }
 
-      let renderCount = 0;
-      const render = debounceFrame(() => {
-        const $app = document.querySelector("#app");
-        $app.innerHTML = `
-          <div>
-            ${renderCount}
-            ${CounterAndMeow()}
-          </div>
-        `;
-        renderCount += 1;
-        currentStateKey = 0;
-      });
-
-      render();
+      const App = () => {
+        return `
+        <div>
+          ${CounterAndMeow()}
+        </div>
+      `;
+      };
+      render(App, document.querySelector("#app"));
     </script>
   </body>
 </html>
