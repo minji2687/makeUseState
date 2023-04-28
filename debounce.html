@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      let count = 0;
+      const debounce = (callback, timer = 0) => {
+        let currentCallbackTimer = -1;
+
+        return () => {
+          count += 1;
+
+          clearTimeout(currentCallbackTimer);
+
+          currentCallbackTimer = requestAnimationFrame(callback);
+        };
+      };
+
+      const meow = debounce(() => console.log("야옹" + count), 100);
+      meow();
+      meow();
+      meow();
+      meow();
+      setTimeout(meow, 100);
+    </script>
+  </body>
+</html>

@@ -34,45 +34,73 @@
         return [state, setState];
       }
 
-      function Counter() {
-        const [count, setCount] = useState(1);
+      // function Counter() {
+      //   const [count, setCount] = useState(1);
 
-        window.increment = () => setCount(1);
+      //   window.increment = () => setCount(1);
+
+      //   return `
+      //     <div>
+      //       <strong>count: ${count}</strong>
+      //       <button onclick="increment()">증가</button>
+      //     </div>
+      //   `;
+      // }
+
+      // function Cat() {
+      //   const [cat, setCat] = useState("고양이");
+
+      //   window.meow = () => setCat(cat + " 야옹!");
+
+      //   return `
+      //     <div>
+      //       <strong>${cat}</strong>
+      //       <button onclick="meow()">고양이 울음소리</button>
+      //     </div>
+      //   `;
+      // }
+
+      function CounterAndMeow() {
+        const [count, setCount] = useState(1);
+        const [cat, setCat] = useState("야옹! ");
+
+        function countMeow(newCount) {
+          setCount(newCount);
+          setCat("야옹! ".repeat(newCount));
+        }
+
+        window.increment = () => countMeow(count + 1);
+        window.decrement = () => countMeow(count - 1);
 
         return `
           <div>
-            <strong>count: ${count}</strong>
+            <p>고양이가 ${count}번 울어서 ${cat}</p>
             <button onclick="increment()">증가</button>
+            <button onclick="decrement()">감소</button>
           </div>
         `;
       }
 
-      function Cat() {
-        const [cat, setCat] = useState("고양이");
-
-        window.meow = () => setCat(cat + " 야옹!");
-
-        return `
-          <div>
-            <strong>${cat}</strong>
-            <button onclick="meow()">고양이 울음소리</button>
-          </div>
-        `;
+      function debounceFrame(callback) {
+        let nextFrameCallback = -1;
+        return () => {
+          cancelAnimationFrame(nextFrameCallback);
+          nextFrameCallback = requestAnimationFrame(callback);
+        };
       }
 
       let renderCount = 0;
-      const render = () => {
+      const render = debounceFrame(() => {
         const $app = document.querySelector("#app");
         $app.innerHTML = `
           <div>
-            renderCount: ${renderCount}
-            ${Counter()}
-            ${Cat()}
+            ${renderCount}
+            ${CounterAndMeow()}
           </div>
         `;
-        currentStateKey = 0;
         renderCount += 1;
-      };
+        currentStateKey = 0;
+      });
 
       render();
     </script>
